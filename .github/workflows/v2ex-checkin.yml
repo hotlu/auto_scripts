@@ -3,9 +3,17 @@ name: 📮 V2EX Auto Checkin
 
 
 
+
+
+
+
 on:
   # 手动触发
   workflow_dispatch:
+
+
+
+
 
 
 
@@ -16,7 +24,15 @@ on:
     - cron: "25 0 * * *"→ Runs at 00:25
 
 
+
+
     - cron: "25 12 * * *"→ Runs at 12:25
+
+
+
+
+
+
 
 
 
@@ -28,6 +44,10 @@ permissions:
 concurrency:
   group: v2ex-checkin
   cancel-in-progress: false
+
+
+
+
 
 
 
@@ -46,10 +66,18 @@ jobs:
 
 
 
+
+
+
+
     steps:
       # 步骤 1: 检出公开仓库
       - name: 📥 检出公开仓库
         uses: actions/checkout@v4
+
+
+
+
 
 
 
@@ -61,6 +89,10 @@ jobs:
 
 
 
+
+
+
+
       # 步骤 2: 检出私有仓库（脚本本体 + Cookie 缓存）
       - name: 🔐 检出私有仓库
         uses: actions/checkout@v4
@@ -68,38 +100,3 @@ jobs:
           repository: ${{ env.PRIVATE_REPO }}
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           ref: main
-          path: ${{ env.WORK_DIR }}
-          fetch-depth: 1
-
-
-
-
-      # 步骤 3: 设置 Python 环境
-      - name: 🐍 设置 Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-
-
-
-      # 步骤 4: 安装 Python 依赖（ddddocr 用于登录验证码识别）
-      - name: 📚 安装 Python 依赖
-        run: |
-          pip install --upgrade pip
-          pip install requests ddddocr pillow cryptography
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "⚠️ 未找到 requirements.txt，跳过"
-          fi
-          python -m playwright install --with-deps chromium
-        working-directory: ${{ env.WORK_DIR }}
-
-
-
-
-      # 步骤 5: 随机延迟（错峰）
-      - name: ⏳ 添加随机延迟
-        run: |
-          delay=$((RANDOM % 90))
